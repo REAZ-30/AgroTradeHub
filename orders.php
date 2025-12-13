@@ -344,13 +344,13 @@ if (empty($orders)) {
             <?php if(isset($_SESSION['user_id'])): ?>
                 <div class="dropdown">
                     <button class="dropbtn">
-                        <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                        <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-header">Customer Account</div>
                         <a href="profile.php" class="dropdown-item">My Profile</a>
-                        <a href="orders.php" class="dropdown-item">My Orders</a>
-                        <a href="cart.php" class="dropdown-item">My Cart</a>
+                        <!-- <a href="orders.php" class="dropdown-item">My Orders</a>
+                        <a href="cart.php" class="dropdown-item">My Cart</a> -->
                         <div class="dropdown-divider"></div>
                         <a href="logout.php" class="dropdown-item">Logout</a>
                     </div>
@@ -433,7 +433,7 @@ if (empty($orders)) {
                                     <small class="text-muted">Placed on <?php echo date('M j, Y g:i A', strtotime($order['created_at'])); ?></small>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="price-tag fw-bold">$<?php echo number_format($order['total_amount'], 2); ?></span>
+                                    <span class="price-tag fw-bold">৳<?php echo number_format($order['total_amount'], 2); ?></span>
                                     <span class="status-badge badge 
                                         <?php 
                                         switch($order['status']) {
@@ -474,10 +474,10 @@ if (empty($orders)) {
                                                     <p class="mb-1 small fw-bold"><?php echo $item['name']; ?></p>
                                                     <p class="mb-0 small text-muted">
                                                         Qty: <?php echo $item['quantity']; ?> × 
-                                                        $<?php echo number_format($item['price'], 2); ?>
+                                                        ৳<?php echo number_format($item['price'], 2); ?>
                                                     </p>
                                                     <p class="mb-0 small text-success fw-bold">
-                                                        $<?php echo number_format($item['quantity'] * $item['price'], 2); ?>
+                                                        ৳<?php echo number_format($item['quantity'] * $item['price'], 2); ?>
                                                     </p>
                                                 </div>
                                             </div>
@@ -488,8 +488,7 @@ if (empty($orders)) {
                                 <!-- Order Actions -->
                                 <div class="mt-3 pt-3 border-top">
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-success btn-sm">Track Order</button>
-                                        <button class="btn btn-outline-primary btn-sm">View Invoice</button>
+                                       
                                         <?php if($order['status'] == 'pending' || $order['status'] == 'processing'): ?>
                                             <button class="btn btn-outline-danger btn-sm">Cancel Order</button>
                                         <?php endif; ?>
@@ -594,13 +593,7 @@ if (empty($orders)) {
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="cart.php" class="text-white">Cart</a></li>
-                        <li><a href="orders.php" class="text-white">My Orders</a></li>
-                    </ul>
+                    
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>

@@ -440,13 +440,13 @@ $total = $subtotal + $tax + $shipping;
             <?php if(isset($_SESSION['user_id'])): ?>
                 <div class="dropdown">
                     <button class="dropbtn">
-                        <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                        <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                     </button>
                     <div class="dropdown-menu">
                         <a href="profile.php" class="dropdown-item">My Profile</a>
                         <?php if($_SESSION['user_type'] == 'customer'): ?>
-                            <a href="cart.php" class="dropdown-item">My Cart</a>
-                            <a href="orders.php" class="dropdown-item">My Orders</a>
+                            <!-- <a href="cart.php" class="dropdown-item">My Cart</a>
+                            <a href="orders.php" class="dropdown-item">My Orders</a> -->
                         <?php endif; ?>
                         <div class="dropdown-divider"></div>
                         <a href="logout.php" class="dropdown-item">Logout</a>
@@ -567,7 +567,7 @@ $total = $subtotal + $tax + $shipping;
                                         <div class="col-md-4">
                                             <h6 class="mb-1"><?php echo $item['name']; ?></h6>
                                             <p class="text-muted small mb-0">Seller: <?php echo $item['seller_name']; ?></p>
-                                            <p class="text-success fw-bold mb-0">$<?php echo number_format($item['price'], 2); ?></p>
+                                            <p class="text-success fw-bold mb-0">৳<?php echo number_format($item['price'], 2); ?></p>
                                             <?php if ($available_stock < 99): ?>
                                                 <small class="text-muted d-block">Available: <?php echo $available_stock; ?></small>
                                             <?php endif; ?>
@@ -586,7 +586,7 @@ $total = $subtotal + $tax + $shipping;
                                             </form>
                                         </div>
                                         <div class="col-md-2 text-end">
-                                            <strong>$<?php echo number_format($item['price'] * $item['quantity'], 2); ?></strong>
+                                            <strong>৳<?php echo number_format($item['price'] * $item['quantity'], 2); ?></strong>
                                         </div>
                                         <div class="col-md-1 text-end">
                                             <a href="cart.php?remove=<?php echo $product_id; ?>" 
@@ -610,20 +610,20 @@ $total = $subtotal + $tax + $shipping;
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal (<?php echo $total_items; ?> items):</span>
-                            <span>$<?php echo number_format($subtotal, 2); ?></span>
+                            <span>৳<?php echo number_format($subtotal, 2); ?></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Tax (10%):</span>
-                            <span>$<?php echo number_format($tax, 2); ?></span>
+                            <span>৳<?php echo number_format($tax, 2); ?></span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span>Shipping:</span>
-                            <span>$<?php echo number_format($shipping, 2); ?></span>
+                            <span>৳<?php echo number_format($shipping, 2); ?></span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <strong>Total:</strong>
-                            <strong>$<?php echo number_format($total, 2); ?></strong>
+                            <strong>৳<?php echo number_format($total, 2); ?></strong>
                         </div>
                         
                         <?php if(!empty($_SESSION['cart'])): ?>
@@ -647,12 +647,7 @@ $total = $subtotal + $tax + $shipping;
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="cart.php" class="text-white">Cart</a></li>
-                    </ul>
+                  
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>

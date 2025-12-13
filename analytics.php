@@ -506,13 +506,12 @@ if (empty($analytics_data['monthly_sales'])) {
         <div class="auth-buttons">
             <div class="dropdown">
                 <button class="dropbtn">
-                    <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                    <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                 </button>
                 <div class="dropdown-menu">
                     <div class="dropdown-header">Seller Account</div>
                     <a href="profile.php" class="dropdown-item">My Profile</a>
-                    <a href="analytics.php" class="dropdown-item">Analytics</a>
-                    <a href="addproducts.php" class="dropdown-item">Add Products</a>
+                   
                     <div class="dropdown-divider"></div>
                     <a href="logout.php" class="dropdown-item">Logout</a>
                 </div>
@@ -559,7 +558,7 @@ if (empty($analytics_data['monthly_sales'])) {
                 <div class="card stats-card bg-warning text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Total Revenue</h5>
-                        <h2 class="display-6">$<?php echo number_format($analytics_data['total_revenue'], 2); ?></h2>
+                        <h2 class="display-6">৳<?php echo number_format($analytics_data['total_revenue'], 2); ?></h2>
                     </div>
                 </div>
             </div>
@@ -610,7 +609,7 @@ if (empty($analytics_data['monthly_sales'])) {
                                         <h6 class="mb-1"><?php echo $product['name']; ?></h6>
                                         <small class="text-muted"><?php echo $product['sales']; ?> sales</small>
                                     </div>
-                                    <span class="text-success fw-bold">$<?php echo number_format($product['revenue'], 2); ?></span>
+                                    <span class="text-success fw-bold">৳<?php echo number_format($product['revenue'], 2); ?></span>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -654,7 +653,7 @@ if (empty($analytics_data['monthly_sales'])) {
                                                 </td>
                                                 <td><?php echo date('M j, g:i A', strtotime($order['created_at'])); ?></td>
                                                 <td><?php echo $order['items']; ?></td>
-                                                <td class="fw-bold text-success">$<?php echo number_format($order['order_total'], 2); ?></td>
+                                                <td class="fw-bold text-success">৳<?php echo number_format($order['order_total'], 2); ?></td>
                                                 <td>
                                                     <span class="badge order-status-<?php echo $order['status']; ?>">
                                                         <?php echo ucfirst($order['status']); ?>
@@ -707,12 +706,7 @@ if (empty($analytics_data['monthly_sales'])) {
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="analytics.php" class="text-white">Analytics</a></li>
-                    </ul>
+                
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>
