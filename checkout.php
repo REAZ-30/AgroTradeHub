@@ -440,7 +440,7 @@ if (!empty($_SESSION['cart'])) {
             <?php endif; ?>
         </a>
         <a href="orders.php">My Orders</a>
-        <a href="checkout.php" class="active">Checkout</a>
+        <!-- <a href="checkout.php" class="active">Checkout</a> -->
     </div>
 
     <div class="auth-buttons">
