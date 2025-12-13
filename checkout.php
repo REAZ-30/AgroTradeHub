@@ -600,7 +600,7 @@ if (!empty($_SESSION['cart'])) {
                                         <small class="text-muted">Qty: <?php echo (int)$item['quantity']; ?></small>
                                     </div>
                                 </div>
-                                <small class="fw-bold">$<?php echo number_format(((float)$item['price']) * ((int)$item['quantity']), 2); ?></small>
+                                <small class="fw-bold">৳<?php echo number_format(((float)$item['price']) * ((int)$item['quantity']), 2); ?></small>
                             </div>
                         <?php endforeach; ?>
 
@@ -608,26 +608,26 @@ if (!empty($_SESSION['cart'])) {
 
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span>$<?php echo number_format($subtotal, 2); ?></span>
+                            <span>৳<?php echo number_format($subtotal, 2); ?></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Tax (10%):</span>
-                            <span>$<?php echo number_format($tax, 2); ?></span>
+                            <span>৳<?php echo number_format($tax, 2); ?></span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span>Shipping:</span>
                             <span class="<?php echo $shipping == 0 ? 'text-success' : ''; ?>">
-                                <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
+                                <?php echo $shipping == 0 ? 'FREE' : '৳' . number_format($shipping, 2); ?>
                             </span>
                         </div>
                         <div class="d-flex justify-content-between fw-bold fs-5 pt-2 border-top">
                             <span>Total:</span>
-                            <span class="text-success">$<?php echo number_format($total, 2); ?></span>
+                            <span class="text-success">৳<?php echo number_format($total, 2); ?></span>
                         </div>
 
                         <div class="mt-4">
                             <div class="alert alert-info small mb-0">
-                                <strong>Free Shipping</strong> on orders over $50
+                                <strong>Free Shipping</strong> on orders over ৳50
                             </div>
                         </div>
                     </div>
