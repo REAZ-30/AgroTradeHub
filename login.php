@@ -470,9 +470,7 @@ $db_connected = getDBConnection() !== null;
         <div class="login-card">
             <div class="login-header">
                 <h2>Login to AgroTradeHub</h2>
-                <div class="user-type-badge">
-                    Login as <?php echo $user_type_display; ?>
-                </div>
+                
             </div>
             
             <div class="login-body">

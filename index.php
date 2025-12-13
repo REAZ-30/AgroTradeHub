@@ -631,9 +631,10 @@ function getDBConnection() {
       </a>
       <a href="orders.php">My Orders</a>
     <?php endif; ?>
-    <?php if(isset($_SESSION['user_id']) && $_SESSION['user_type'] == 'seller'): ?>
-      <a href="analytics.php">Analytics</a>
-    <?php endif; ?>
+   <?php if(isset($_SESSION['user_id']) && $_SESSION['user_type'] == 'seller'): ?>
+    <a href="addproducts.php">Add Products</a>
+    <a href="analytics.php">Analytics</a>
+<?php endif; ?>
   </div>
 
   <div class="auth-buttons">
@@ -647,7 +648,7 @@ function getDBConnection() {
           <?php if($_SESSION['user_type'] == 'customer'): ?>
             <a href="orders.php" class="dropdown-item">My Orders</a>
           <?php elseif($_SESSION['user_type'] == 'seller'): ?>
-            <a href="addproducts.php" class="dropdown-item">Add Products</a>
+          
           <?php elseif($_SESSION['user_type'] == 'admin'): ?>
             <a href="manage.php" class="dropdown-item">Admin Panel</a>
           <?php endif; ?>
@@ -805,7 +806,7 @@ function getDBConnection() {
     <p>Connecting farmers directly with customers for fresh farm products.</p>
   </div>
 
-  <div>
+  <!-- <div>
     <h4>Quick Links</h4>
     <a href="index.php">Home</a><br>
     <a href="products.php">Products</a><br>
@@ -813,7 +814,7 @@ function getDBConnection() {
       <a href="cart.php">Cart</a><br>
       <a href="orders.php">My Orders</a>
     <?php endif; ?>
-  </div>
+  </div> -->
 
   <div>
     <h4>Contact</h4>

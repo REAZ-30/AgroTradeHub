@@ -16,7 +16,23 @@ $conn = $db->getConnection();
 $orders = [];
 
 try {
-    $query = "SELECT o.id, o.order_number, o.total_amount, o.status, o.order_date, o.shipping_address, o.created_at
+    $query = "SELECT 
+                o.id, 
+                o.order_number, 
+                o.total_amount, 
+                o.status, 
+                o.order_date, 
+                o.shipping_address, 
+                o.created_at,
+                -- Check if all items are seller-confirmed
+                (SELECT 
+                    CASE 
+                        WHEN COUNT(DISTINCT oi2.product_id) = 0 THEN 'no_items'
+                        WHEN SUM(CASE WHEN oi2.seller_confirmed = 1 THEN 1 ELSE 0 END) = COUNT(DISTINCT oi2.product_id) THEN 'all_confirmed'
+                        ELSE 'partial_confirmed'
+                    END
+                FROM order_items oi2 
+                WHERE oi2.order_id = o.id) as confirmation_status
               FROM orders o 
               WHERE o.customer_id = ? 
               ORDER BY o.created_at DESC";
@@ -25,23 +41,50 @@ try {
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get order items for each order
-    foreach ($orders as &$order) {
-        $items_query = "SELECT oi.quantity, oi.price, p.name, p.image_url, p.id as product_id
+    $processed_orders = [];
+    foreach ($orders as $order) {
+        $items_query = "SELECT 
+                        oi.quantity, 
+                        oi.price, 
+                        p.name, 
+                        p.image_url, 
+                        p.id as product_id,
+                        oi.seller_confirmed,
+                        u.full_name as seller_name
                        FROM order_items oi 
                        JOIN products p ON oi.product_id = p.id 
+                       JOIN users u ON p.seller_id = u.id
                        WHERE oi.order_id = ?";
         $items_stmt = $conn->prepare($items_query);
         $items_stmt->execute([$order['id']]);
         $order['items'] = $items_stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Check if reviews already exist for each product in this order
+        // Determine order display status
+        if ($order['status'] === 'pending') {
+            if ($order['confirmation_status'] === 'all_confirmed') {
+                $order['display_status'] = 'completed';
+            } elseif ($order['confirmation_status'] === 'partial_confirmed') {
+                $order['display_status'] = 'processing';
+            } else {
+                $order['display_status'] = 'pending';
+            }
+        } else {
+            $order['display_status'] = $order['status'];
+        }
+        
+        // Check if reviews already exist for each product
         foreach ($order['items'] as &$item) {
             $review_check_query = "SELECT id FROM reviews WHERE product_id = ? AND customer_id = ?";
             $review_check_stmt = $conn->prepare($review_check_query);
             $review_check_stmt->execute([$item['product_id'], $customer_id]);
             $item['has_reviewed'] = $review_check_stmt->rowCount() > 0;
         }
+        unset($item); // Important: unset the reference
+        
+        $processed_orders[] = $order;
     }
+    
+    $orders = $processed_orders;
     
 } catch (Exception $e) {
     $error_message = "Error loading orders: " . $e->getMessage();
@@ -260,7 +303,7 @@ if (empty($orders)) {
             height: 20px;
             font-size: 12px;
             display: flex;
-                align-items: center;
+            align-items: center;
             justify-content: center;
         }
         
@@ -288,6 +331,32 @@ if (empty($orders)) {
             margin-top: 5px;
             font-size: 0.8rem;
             padding: 4px 8px;
+        }
+        
+        /* Status info */
+        .status-info {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .badge-sm {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            margin-left: 5px;
+        }
+        
+        /* Confirmation indicators */
+        .confirmed-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.8rem;
+        }
+        
+        /* Seller info */
+        .seller-info {
+            font-size: 0.8rem;
+            color: #666;
         }
         
         /* Responsive */
@@ -344,13 +413,11 @@ if (empty($orders)) {
             <?php if(isset($_SESSION['user_id'])): ?>
                 <div class="dropdown">
                     <button class="dropbtn">
-                        <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                        <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-header">Customer Account</div>
                         <a href="profile.php" class="dropdown-item">My Profile</a>
-                        <a href="orders.php" class="dropdown-item">My Orders</a>
-                        <a href="cart.php" class="dropdown-item">My Cart</a>
                         <div class="dropdown-divider"></div>
                         <a href="logout.php" class="dropdown-item">Logout</a>
                     </div>
@@ -422,107 +489,152 @@ if (empty($orders)) {
                 </div>
             </div>
         <?php else: ?>
+            <!-- Debug info - remove in production -->
+            <?php if(false): // Set to true to debug ?>
+                <div class="alert alert-info">
+                    <strong>Debug Info:</strong><br>
+                    Total Orders: <?php echo count($orders); ?><br>
+                    <?php foreach($orders as $index => $order): ?>
+                        Order <?php echo $index; ?>: #<?php echo $order['order_number']; ?> (ID: <?php echo $order['id']; ?>)<br>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            
             <!-- Orders List -->
             <div class="row">
                 <div class="col-12">
-                    <?php foreach($orders as $order): ?>
-                        <div class="card order-card mb-4">
-                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">Order #<?php echo $order['order_number']; ?></h6>
-                                    <small class="text-muted">Placed on <?php echo date('M j, Y g:i A', strtotime($order['created_at'])); ?></small>
-                                </div>
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="price-tag fw-bold">$<?php echo number_format($order['total_amount'], 2); ?></span>
-                                    <span class="status-badge badge 
-                                        <?php 
-                                        switch($order['status']) {
-                                            case 'completed': echo 'bg-success'; break;
-                                            case 'processing': echo 'bg-primary'; break;
-                                            case 'pending': echo 'bg-warning'; break;
-                                            case 'cancelled': echo 'bg-danger'; break;
-                                            default: echo 'bg-secondary';
-                                        }
-                                        ?>">
-                                        <?php echo ucfirst($order['status']); ?>
-                                    </span>
-                                </div>
-                            </div>
+                    <?php if(empty($orders)): ?>
+                        <div class="card text-center py-5">
                             <div class="card-body">
-                                <!-- Shipping Address -->
-                                <div class="mb-3">
-                                    <small class="text-muted">Shipping to:</small>
-                                    <p class="mb-1 small"><?php echo $order['shipping_address']; ?></p>
-                                </div>
-                                
-                                <!-- Order Items -->
-                                <h6 class="mb-3">Order Items:</h6>
-                                <div class="row">
-                                    <?php foreach($order['items'] as $item): ?>
-                                        <div class="col-md-6 mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <?php if($item['image_url']): ?>
-                                                    <img src="<?php echo $item['image_url']; ?>" 
-                                                         alt="<?php echo $item['name']; ?>" 
-                                                         class="product-image me-3">
-                                                <?php else: ?>
-                                                    <div class="product-image me-3 bg-light d-flex align-items-center justify-content-center">
-                                                        <small class="text-muted">No image</small>
-                                                    </div>
+                                <h3 class="text-muted">No Orders Found</h3>
+                                <p class="text-muted mb-4">Unable to load your orders.</p>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach($orders as $order): ?>
+                            <div class="card order-card mb-4">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Order #<?php echo $order['order_number']; ?></h6>
+                                        <small class="text-muted">Placed on <?php echo date('M j, Y g:i A', strtotime($order['created_at'])); ?></small>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="price-tag fw-bold">৳<?php echo number_format($order['total_amount'], 2); ?></span>
+                                        <div class="text-end">
+                                            <span class="status-badge badge 
+                                                <?php 
+                                                $display_status = $order['display_status'];
+                                                switch($display_status) {
+                                                    case 'completed': echo 'bg-success'; break;
+                                                    case 'processing': echo 'bg-primary'; break;
+                                                    case 'pending': echo 'bg-warning'; break;
+                                                    case 'cancelled': echo 'bg-danger'; break;
+                                                    default: echo 'bg-secondary';
+                                                }
+                                                ?>">
+                                                <?php echo ucfirst($display_status); ?>
+                                            </span>
+                                            <div class="status-info mt-1">
+                                                <?php if($order['confirmation_status'] === 'partial_confirmed' && $order['status'] === 'pending'): ?>
+                                                    <small class="text-info">✓ Some items confirmed • ⏳ Awaiting other sellers</small>
+                                                <?php elseif($order['confirmation_status'] === 'all_confirmed' && $order['status'] === 'pending'): ?>
+                                                    <small class="text-success">✓ All sellers confirmed</small>
                                                 <?php endif; ?>
-                                                <div>
-                                                    <p class="mb-1 small fw-bold"><?php echo $item['name']; ?></p>
-                                                    <p class="mb-0 small text-muted">
-                                                        Qty: <?php echo $item['quantity']; ?> × 
-                                                        $<?php echo number_format($item['price'], 2); ?>
-                                                    </p>
-                                                    <p class="mb-0 small text-success fw-bold">
-                                                        $<?php echo number_format($item['quantity'] * $item['price'], 2); ?>
-                                                    </p>
-                                                </div>
                                             </div>
                                         </div>
-                                    <?php endforeach; ?>
+                                    </div>
                                 </div>
-                                
-                                <!-- Order Actions -->
-                                <div class="mt-3 pt-3 border-top">
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-success btn-sm">Track Order</button>
-                                        <button class="btn btn-outline-primary btn-sm">View Invoice</button>
-                                        <?php if($order['status'] == 'pending' || $order['status'] == 'processing'): ?>
-                                            <button class="btn btn-outline-danger btn-sm">Cancel Order</button>
+                                <div class="card-body">
+                                    <!-- Shipping Address -->
+                                    <div class="mb-3">
+                                        <small class="text-muted">Shipping to:</small>
+                                        <p class="mb-1 small"><?php echo $order['shipping_address']; ?></p>
+                                    </div>
+                                    
+                                    <!-- Order Items -->
+                                    <h6 class="mb-3">Order Items:</h6>
+                                    <div class="row">
+                                        <?php if(empty($order['items'])): ?>
+                                            <div class="col-12">
+                                                <p class="text-muted">No items found for this order.</p>
+                                            </div>
+                                        <?php else: ?>
+                                            <?php foreach($order['items'] as $item): ?>
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <?php if($item['image_url']): ?>
+                                                            <img src="<?php echo $item['image_url']; ?>" 
+                                                                 alt="<?php echo $item['name']; ?>" 
+                                                                 class="product-image me-3"
+                                                                 onerror="this.src='https://via.placeholder.com/60/2DC653/FFFFFF?text=Prod'">
+                                                        <?php else: ?>
+                                                            <div class="product-image me-3 bg-light d-flex align-items-center justify-content-center">
+                                                                <small class="text-muted">No image</small>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <div>
+                                                            <p class="mb-1 small fw-bold">
+                                                                <?php echo $item['name']; ?>
+                                                                <?php if($item['seller_confirmed']): ?>
+                                                                    <span class="badge bg-success badge-sm">✓ Confirmed</span>
+                                                                <?php else: ?>
+                                                                    <span class="badge bg-warning badge-sm">⏳ Pending</span>
+                                                                <?php endif; ?>
+                                                            </p>
+                                                            <p class="mb-0 seller-info">
+                                                                Seller: <?php echo $item['seller_name']; ?>
+                                                            </p>
+                                                            <p class="mb-0 small text-muted">
+                                                                Qty: <?php echo $item['quantity']; ?> × 
+                                                                ৳<?php echo number_format($item['price'], 2); ?>
+                                                            </p>
+                                                            <p class="mb-0 small text-success fw-bold">
+                                                                ৳<?php echo number_format($item['quantity'] * $item['price'], 2); ?>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
                                         <?php endif; ?>
-                                        
-                                        <!-- LEAVE A REVIEW BUTTON - Only for completed orders -->
-                                        <?php if($order['status'] == 'completed'): ?>
-                                            <?php 
-                                            // Check if there are any items that haven't been reviewed yet
-                                            $has_unreviewed_items = false;
-                                            foreach($order['items'] as $item) {
-                                                if(!$item['has_reviewed']) {
-                                                    $has_unreviewed_items = true;
-                                                    break;
-                                                }
-                                            }
-                                            ?>
+                                    </div>
+                                    
+                                    <!-- Order Actions -->
+                                    <div class="mt-3 pt-3 border-top">
+                                        <div class="d-flex gap-2">
+                                            <!-- REMOVED: Cancel Order button for pending/processing orders -->
                                             
-                                            <?php if($has_unreviewed_items): ?>
-                                                <a href="review.php?order_id=<?php echo $order['id']; ?>" 
-                                                   class="btn btn-warning btn-sm">
-                                                    Leave a Review
-                                                </a>
-                                            <?php else: ?>
-                                                <button class="btn btn-outline-secondary btn-sm" disabled>
-                                                    All Items Reviewed
-                                                </button>
+                                            <!-- LEAVE A REVIEW BUTTON - Only for completed orders -->
+                                            <?php if($order['display_status'] == 'completed'): ?>
+                                                <?php 
+                                                // Check if there are any items that haven't been reviewed yet
+                                                $has_unreviewed_items = false;
+                                                if(!empty($order['items'])) {
+                                                    foreach($order['items'] as $item) {
+                                                        if(!$item['has_reviewed']) {
+                                                            $has_unreviewed_items = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                ?>
+                                                
+                                                <?php if($has_unreviewed_items): ?>
+                                                    <a href="review.php?order_id=<?php echo $order['id']; ?>" 
+                                                       class="btn btn-warning btn-sm">
+                                                        Leave a Review
+                                                    </a>
+                                                <?php else: ?>
+                                                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                                                        All Items Reviewed
+                                                    </button>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                        <?php endif; ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
             
@@ -541,10 +653,15 @@ if (empty($orders)) {
                         <div class="card-body">
                             <h5 class="card-title text-primary">
                                 <?php 
-                                $pending_orders = array_filter($orders, function($order) {
-                                    return $order['status'] == 'pending';
-                                });
-                                echo count($pending_orders);
+                                $pending_orders = 0;
+                                if(!empty($orders)) {
+                                    foreach($orders as $order) {
+                                        if($order['display_status'] == 'pending') {
+                                            $pending_orders++;
+                                        }
+                                    }
+                                }
+                                echo $pending_orders;
                                 ?>
                             </h5>
                             <p class="card-text small text-muted">Pending</p>
@@ -556,29 +673,68 @@ if (empty($orders)) {
                         <div class="card-body">
                             <h5 class="card-title text-info">
                                 <?php 
-                                $completed_orders = array_filter($orders, function($order) {
-                                    return $order['status'] == 'completed';
-                                });
-                                echo count($completed_orders);
+                                $processing_orders = 0;
+                                if(!empty($orders)) {
+                                    foreach($orders as $order) {
+                                        if($order['display_status'] == 'processing') {
+                                            $processing_orders++;
+                                        }
+                                    }
+                                }
+                                echo $processing_orders;
                                 ?>
                             </h5>
-                            <p class="card-text small text-muted">Completed</p>
+                            <p class="card-text small text-muted">Processing</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <h5 class="card-title text-warning">
+                            <h5 class="card-title text-success">
                                 <?php 
-                                $active_orders = array_filter($orders, function($order) {
-                                    return in_array($order['status'], ['pending', 'processing']);
-                                });
-                                echo count($active_orders);
+                                $completed_orders = 0;
+                                if(!empty($orders)) {
+                                    foreach($orders as $order) {
+                                        if($order['display_status'] == 'completed') {
+                                            $completed_orders++;
+                                        }
+                                    }
+                                }
+                                echo $completed_orders;
                                 ?>
                             </h5>
-                            <p class="card-text small text-muted">Active</p>
+                            <p class="card-text small text-muted">Completed</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Legend for Status -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Order Status Legend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-warning">Pending</span>
+                            <small class="text-muted"> - Order placed, awaiting seller confirmation</small>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-primary">Processing</span>
+                            <small class="text-muted"> - Some sellers confirmed, awaiting others</small>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-success">Completed</span>
+                            <small class="text-muted"> - All sellers confirmed order</small>
+                        </div>
+                     
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <strong>Note:</strong> Orders with multiple sellers show as "Processing" until all sellers confirm their items.
+                        </small>
                     </div>
                 </div>
             </div>
@@ -594,13 +750,7 @@ if (empty($orders)) {
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="cart.php" class="text-white">Cart</a></li>
-                        <li><a href="orders.php" class="text-white">My Orders</a></li>
-                    </ul>
+                    
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>

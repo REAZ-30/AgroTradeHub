@@ -490,16 +490,14 @@ function getSampleProducts() {
             <?php if(isset($_SESSION['user_id'])): ?>
                 <div class="dropdown">
                     <button class="dropbtn">
-                        <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                        <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                     </button>
                     <div class="dropdown-menu">
                         <a href="profile.php" class="dropdown-item">My Profile</a>
                         <?php if($_SESSION['user_type'] == 'customer'): ?>
-                            <a href="cart.php" class="dropdown-item">My Cart</a>
-                            <a href="orders.php" class="dropdown-item">My Orders</a>
+                         
                         <?php elseif($_SESSION['user_type'] == 'seller'): ?>
-                            <a href="addproducts.php" class="dropdown-item">Add Products</a>
-                            <a href="analytics.php" class="dropdown-item">Seller Analytics</a>
+                            
                         <?php elseif($_SESSION['user_type'] == 'admin'): ?>
                             <a href="manage.php" class="dropdown-item">Admin Panel</a>
                         <?php endif; ?>
@@ -671,7 +669,7 @@ function getSampleProducts() {
                                         <h5 class="card-title"><?php echo $product['name']; ?></h5>
                                         <p class="card-text text-muted small"><?php echo $product['description']; ?></p>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="price-tag">$<?php echo number_format($product['price'], 2); ?></span>
+                                            <span class="price-tag">৳<?php echo number_format($product['price'], 2); ?></span>
                                             <span class="badge bg-success">In Stock: <?php echo $product['quantity']; ?></span>
                                         </div>
                                         <p class="card-text">
@@ -732,11 +730,11 @@ function getSampleProducts() {
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
+                    <!-- <h5>Quick Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="index.php" class="text-white">Home</a></li>
                         <li><a href="products.php" class="text-white">Products</a></li>
-                    </ul>
+                    </ul> -->
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>

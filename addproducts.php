@@ -414,13 +414,11 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         <div class="auth-buttons">
             <div class="dropdown">
                 <button class="dropbtn">
-                    <span class="user-welcome">Welcome, <?php echo $_SESSION['full_name']; ?></span>
+                    <span class="user-welcome"><?php echo $_SESSION['full_name']; ?></span>
                 </button>
                 <div class="dropdown-menu">
                     <div class="dropdown-header">Seller Account</div>
                     <a href="profile.php" class="dropdown-item">My Profile</a>
-                    <a href="analytics.php" class="dropdown-item">Analytics</a>
-                    <a href="addproducts.php" class="dropdown-item">Add Products</a>
                     <div class="dropdown-divider"></div>
                     <a href="logout.php" class="dropdown-item">Logout</a>
                 </div>
@@ -518,7 +516,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label class="form-label">Price ($) *</label>
+                                                <label class="form-label">Price (৳) *</label>
                                                 <input type="number" name="price" class="form-control" 
                                                        value="<?php echo $edit_product ? $edit_product['price'] : ($_POST['price'] ?? ''); ?>" 
                                                        step="0.01" min="0.01" placeholder="0.00" required>
@@ -654,13 +652,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                     <p>Connecting farmers directly with customers for fresh farm products.</p>
                 </div>
                 <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php" class="text-white">Home</a></li>
-                        <li><a href="products.php" class="text-white">Products</a></li>
-                        <li><a href="analytics.php" class="text-white">Analytics</a></li>
-                        <li><a href="addproducts.php" class="text-white">Add Products</a></li>
-                    </ul>
+                    
                 </div>
                 <div class="col-md-3">
                     <h5>Contact</h5>
