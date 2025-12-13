@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 13, 2025 at 05:59 PM
+-- Generation Time: Dec 13, 2025 at 08:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,15 +73,12 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `customer_id`, `total_amount`, `status`, `order_date`, `shipping_address`, `created_at`, `order_number`, `payment_method`, `payment_status`, `payment_transaction_id`, `payment_mobile`, `customer_phone`) VALUES
-(26, 21, 880.00, 'completed', '2025-12-12 11:59:03', 'Adabor', '2025-12-12 11:59:03', 'ORD-20251212-125903-1680', 'bkash', 'paid', 'TRX123456789', '01617063610', '01617063610'),
-(27, 21, 60.00, 'completed', '2025-12-12 12:32:21', 'Adabor', '2025-12-12 12:32:21', 'ORD-20251212-133221-4912', 'bkash', 'paid', 'TRX123456789', '01786335550', '01617063610'),
-(28, 22, 220.00, 'completed', '2025-12-12 13:37:10', 'Mohammadpur', '2025-12-12 13:37:10', 'ORD-20251212-143710-4847', 'bkash', 'paid', 'TRX123456789', '01234323131', '01403161496'),
-(29, 22, 110.00, 'completed', '2025-12-12 13:37:46', 'Mohammadpur', '2025-12-12 13:37:46', 'ORD-20251212-143746-8393', 'bkash', 'paid', 'TRX123456789', '01234323131', '01403161496'),
-(30, 20, 110.00, 'completed', '2025-12-13 07:18:00', 'Mohammadpur', '2025-12-13 07:18:00', 'ORD-20251213-081800-8698', 'bkash', 'paid', 'TRX123456789', '01403161496', '01403161496'),
-(31, 20, 962.50, 'pending', '2025-12-13 09:33:26', 'Mohammadpur', '2025-12-13 09:33:26', 'ORD-20251213-103326-7501', 'bkash', 'paid', 'TRX1777', '017', '01403161496'),
-(32, 20, 32.50, 'pending', '2025-12-13 09:49:59', 'Mohammadpur', '2025-12-13 09:49:59', 'ORD-20251213-104959-2936', 'bkash', 'paid', 'TRX22222', '017', '01403161496'),
-(33, 26, 32.50, 'pending', '2025-12-13 16:43:50', 'Dhanmondi', '2025-12-13 16:43:50', 'ORD-20251213-174350-5501', 'bkash', 'paid', 'TRX365353', '01776', '017112227'),
-(34, 26, 88.00, 'pending', '2025-12-13 16:44:58', 'Dhanmondi', '2025-12-13 16:44:58', 'ORD-20251213-174458-4943', 'bkash', 'paid', 'TRX534335', '01776', '017112227');
+(45, 21, 132.00, 'completed', '2025-12-13 19:34:48', 'Adabor', '2025-12-13 19:34:48', 'ORD-20251213-203448-6194', 'bkash', 'paid', 'TRX123', '01231', '01617063610'),
+(46, 21, 88.00, 'completed', '2025-12-13 19:35:09', 'Adabor', '2025-12-13 19:35:09', 'ORD-20251213-203509-4348', 'bkash', 'paid', 'TRX3423', '1231', '01617063610'),
+(49, 21, 880.00, 'completed', '2025-12-13 19:35:59', 'Adabor', '2025-12-13 19:35:59', 'ORD-20251213-203559-2307', 'bkash', 'paid', 'TRX564', '234234', '01617063610'),
+(50, 21, 110.00, 'completed', '2025-12-13 19:38:05', 'Adabor', '2025-12-13 19:38:05', 'ORD-20251213-203805-5119', 'bkash', 'paid', 'TRX13223', '23423', '01617063610'),
+(51, 21, 1650.00, 'completed', '2025-12-13 19:38:36', 'Adabor', '2025-12-13 19:38:36', 'ORD-20251213-203836-8845', 'bkash', 'paid', 'TRX213123', '34234', '01617063610'),
+(52, 21, 60.00, 'completed', '2025-12-13 19:38:59', 'Adabor', '2025-12-13 19:38:59', 'ORD-20251213-203859-7722', 'bkash', 'paid', 'TRX12312456', '324234', '01617063610');
 
 -- --------------------------------------------------------
 
@@ -95,25 +92,22 @@ CREATE TABLE `order_items` (
   `product_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `seller_id` int(11) DEFAULT NULL
+  `seller_id` int(11) DEFAULT NULL,
+  `seller_confirmed` tinyint(1) DEFAULT 0,
+  `confirmed_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `seller_id`) VALUES
-(21, 26, 9, 1, 800.00, 23),
-(22, 27, 10, 1, 50.00, 23),
-(23, 28, 14, 2, 100.00, 24),
-(24, 29, 14, 1, 100.00, 24),
-(25, 30, 14, 1, 100.00, 24),
-(26, 31, 13, 1, 25.00, 24),
-(27, 31, 10, 1, 50.00, 23),
-(28, 31, 9, 1, 800.00, 23),
-(29, 32, 13, 1, 25.00, 24),
-(30, 33, 13, 1, 25.00, 24),
-(31, 34, 12, 1, 80.00, 23);
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `seller_id`, `seller_confirmed`, `confirmed_at`) VALUES
+(46, 45, 16, 1, 120.00, 23, 1, '2025-12-13 19:54:25'),
+(47, 46, 12, 1, 80.00, 23, 1, '2025-12-13 19:54:23'),
+(50, 49, 9, 1, 800.00, 23, 1, '2025-12-13 19:54:22'),
+(51, 50, 8, 1, 100.00, 23, 1, '2025-12-13 19:54:20'),
+(52, 51, 11, 1, 1500.00, 23, 1, '2025-12-13 19:54:19'),
+(53, 52, 10, 1, 50.00, 23, 1, '2025-12-13 19:54:15');
 
 -- --------------------------------------------------------
 
@@ -140,14 +134,15 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `seller_id`, `category_id`, `name`, `description`, `price`, `quantity`, `image_url`, `product_type`, `is_available`, `created_at`) VALUES
-(8, 23, 3, 'Apple', 'Fresh Apple', 100.00, 20, 'https://static.vecteezy.com/system/resources/previews/020/899/515/non_2x/red-apple-isolated-on-white-png.png', 'fruit', 1, '2025-12-08 05:48:13'),
-(9, 23, 5, 'Beef', 'Fresh beef', 800.00, 9, 'https://static.vecteezy.com/system/resources/thumbnails/049/799/009/small/steak-meat-beef-isolated-transparent-background-png.png', 'meat', 1, '2025-12-08 05:49:55'),
-(10, 23, 2, 'Wheat', 'Fresh wheat', 50.00, 10, 'https://w7.pngwing.com/pngs/703/631/png-transparent-cereal-rice-food-whole-grain-wheat-whole-grains-nutrition-oat-bran-thumbnail.png', 'grain', 1, '2025-12-08 05:52:14'),
-(11, 23, 4, 'Hilsha fish', 'Fresh Hilsha Fish', 1500.00, 4, 'https://png.pngtree.com/png-vector/20250221/ourlarge/pngtree-hilsha-fish-png-image_15552378.png', 'fish', 1, '2025-12-08 05:54:43'),
-(12, 23, 6, 'Milk', 'Fresh milk', 80.00, 20, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTVNJXzJm560I5GjhY8Cgedrs79dwjPo565w&s', 'dairy', 1, '2025-12-08 05:55:55'),
-(13, 24, 1, 'Potato', 'Fresh potato', 25.00, 14, 'https://png.pngtree.com/png-vector/20240615/ourlarge/pngtree-potatoes-image-png-image_12749734.png', 'vegetable', 1, '2025-12-08 05:57:14'),
-(14, 24, 3, 'Mango', 'Fresh mango', 100.00, 2, 'https://static.vecteezy.com/system/resources/previews/026/795/004/non_2x/mango-fruit-tropical-transparent-png.png', 'fruit', 1, '2025-12-08 05:58:32'),
-(15, 28, 3, 'Stawbery', 'Farm Fresh Products from farmers', 230.00, 15, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgbSM5DX2tlzSf0khV37VpQsM9g06A-7F4Uw&s', 'fruit', 1, '2025-12-13 16:50:59');
+(8, 23, 3, 'Apple', 'Fresh Apple', 100.00, 18, 'https://static.vecteezy.com/system/resources/previews/020/899/515/non_2x/red-apple-isolated-on-white-png.png', 'fruit', 1, '2025-12-08 05:48:13'),
+(9, 23, 5, 'Beef', 'Fresh beef', 800.00, 8, 'https://static.vecteezy.com/system/resources/thumbnails/049/799/009/small/steak-meat-beef-isolated-transparent-background-png.png', 'meat', 1, '2025-12-08 05:49:55'),
+(10, 23, 2, 'Wheat', 'Fresh wheat', 50.00, 6, 'https://w7.pngwing.com/pngs/703/631/png-transparent-cereal-rice-food-whole-grain-wheat-whole-grains-nutrition-oat-bran-thumbnail.png', 'grain', 1, '2025-12-08 05:52:14'),
+(11, 23, 4, 'Hilsha fish', 'Fresh Hilsha Fish', 1500.00, 7, 'https://png.pngtree.com/png-vector/20250221/ourlarge/pngtree-hilsha-fish-png-image_15552378.png', 'fish', 1, '2025-12-08 05:54:43'),
+(12, 23, 6, 'Milk', 'Fresh milk', 80.00, 18, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTVNJXzJm560I5GjhY8Cgedrs79dwjPo565w&s', 'dairy', 1, '2025-12-08 05:55:55'),
+(13, 24, 1, 'Potato', 'Fresh potato', 25.00, 8, 'https://png.pngtree.com/png-vector/20240615/ourlarge/pngtree-potatoes-image-png-image_12749734.png', 'vegetable', 1, '2025-12-08 05:57:14'),
+(14, 24, 3, 'Mango', 'Fresh mango', 100.00, 0, 'https://static.vecteezy.com/system/resources/previews/026/795/004/non_2x/mango-fruit-tropical-transparent-png.png', 'fruit', 1, '2025-12-08 05:58:32'),
+(15, 28, 3, 'Stawbery', 'Farm Fresh Products from farmers', 230.00, 12, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgbSM5DX2tlzSf0khV37VpQsM9g06A-7F4Uw&s', 'fruit', 1, '2025-12-13 16:50:59'),
+(16, 23, 2, 'Rice', 'Fresh, corruption free Rice', 120.00, 99, 'https://freshdi.com/blog/wp-content/uploads/2025/07/unnamed.jpg', 'grain', 1, '2025-12-13 19:32:40');
 
 -- --------------------------------------------------------
 
@@ -169,8 +164,7 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`id`, `product_id`, `customer_id`, `rating`, `comment`, `created_at`) VALUES
-(3, 9, 21, 4, 'BEST BEEEF EVER', '2025-12-12 12:00:13'),
-(4, 14, 20, 3, 'thanks zawad bin', '2025-12-13 07:20:07');
+(17, 8, 21, 3, 'Good apple .Tasty even', '2025-12-13 19:55:20');
 
 -- --------------------------------------------------------
 
@@ -271,25 +265,25 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `users`
