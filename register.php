@@ -360,23 +360,7 @@ $user_type_display = ucfirst($user_type);
             margin-top: 5px;
         }
         
-        /* .user-type-links {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-        }
-        
-        .user-type-links a {
-            color: #2DC653;
-            text-decoration: none;
-            font-weight: 500;
-            margin: 0 5px;
-        }
-        
-        .user-type-links a:hover {
-            text-decoration: underline;
-        }
-         */
+      
         .terms-check {
             display: flex;
             align-items: center;
@@ -523,10 +507,8 @@ $user_type_display = ucfirst($user_type);
         <div class="register-card">
             <div class="register-header">
                 <h2>Join AgroTradeHub</h2>
-                <!-- <p>Create your account to get started</p> -->
-                <div class="user-type-badge">
-                    Register as <?php echo $user_type_display; ?>
-                </div>
+                
+                
             </div>
             
             <div class="register-body">
@@ -633,13 +615,7 @@ $user_type_display = ucfirst($user_type);
                     <p>Already have an account? <a href="login.php">Login here</a></p>
                 </div>
                 
-                <!-- <div class="user-type-links">
-                    <small>
-                        Register as: 
-                        <a href="register.php?type=customer">Customer</a> | 
-                        <a href="register.php?type=seller">Seller</a>
-                    </small>
-                </div> -->
+                
             </div>
         </div>
     </div>
